@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Cuaca Kyuttt 🐾</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <style>
+        /* Desain Latar Belakang dan Font */
+        body { 
+            font-family: 'Fredoka', sans-serif; 
+            padding: 20px; 
+            background-color: #ffe4e8; /* Pink pastel yang super soft */
+            color: #5d4037; /* Cokelat lembut agar tidak terlalu kontras */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Memposisikan konten di tengah */
+        }
+        
+        h2 {
+            color: #d81b60;
+            font-size: 28px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        /* Desain Input dan Tombol */
+        .search-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        input { 
+            padding: 12px 20px; 
+            border: 3px solid #b3e5fc; /* Biru pastel */
+            border-radius: 30px;
+            width: 250px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            background-color: #e1f5fe;
+            color: #0277bd;
+            outline: none;
+        }
+        
+        input::placeholder {
+            color: #81d4fa;
+        }
+
+        button { 
+            padding: 12px 25px; 
+            cursor: pointer; 
+            border: 3px solid #e1bee7; /* Ungu pastel */
+            border-radius: 30px;
+            background-color: #f3e5f5;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #6a1b9a;
+            transition: all 0.2s ease; /* Animasi saat di-hover */
+        }
+
+        button:hover {
+            background-color: #e1bee7;
+            transform: scale(1.05); /* Sedikit membesar saat disentuh mouse */
+        }
+
+        /* Area Hasil Cuaca (Dibuat berjajar) */
+        .result-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        /* Mempercantik kotak data */
+        .data-section { 
+            padding: 20px; 
+            border: 4px solid #ffb6c1; /* Garis tepi pink lebih tebal */
+            border-radius: 25px; /* Sudut sangat melengkung */
+            width: 300px; 
+            background-color: #fff0f5; /* Latar kotak pink sangat pucat/putih */
+            box-shadow: 0 8px 15px rgba(255, 182, 193, 0.4); /* Bayangan pink */
+            
+            /* Sembunyikan elemen ini di awal */
+            display: none; 
+        }
+        
+        .data-section h3 { 
+            margin-top: 0; 
+            margin-bottom: 15px;
+            color: #d81b60;
+            text-align: center;
+            border-bottom: 2px dashed #ffb6c1;
+            padding-bottom: 10px;
+        }
+
+        .data-section p { 
+            margin-bottom: 12px; 
+            line-height: 1.5; 
+            font-size: 16px;
+            background-color: #ffffff;
+            padding: 10px 15px;
+            border-radius: 15px;
+            border: 1px solid #ffe4e8;
+        }
+
+        /* Hiasan emoji ✨ */
+        .value-text {
+            float: right;
+            font-weight: bold;
+            color: #d81b60;
+        }
+    </style>
+</head>
+<body>
+
+    <h2> Nama : Salwa Anjaini Futri Endsani </h2>
+    <h2> Nim : 20240140139  </h2>
+
+    <h2>☁️ Cek Cuaca  🐾</h2>
+
+    <div class="search-area">
+        <input type="text" id="inputKota" placeholder="Masukkan kota... ✨">
+        <button id="btnCari">Cari! 🔍</button>
+    </div>
+
+    <div class="result-container">
+        <div class="data-section" id="boxLocation">
+            <h3>📍 Location Info 💖</h3>
+            <p>Region: <span class="value-text" id="val_region">-</span></p>
+            <p>Country: <span class="value-text" id="val_country">-</span></p>
+            <p>Longitude: <span class="value-text" id="val_lon">-</span></p>
+            <p>Latitude: <span class="value-text" id="val_lat">-</span></p>
+        </div>
+
+        <div class="data-section" id="boxWeather">
+            <h3>🌤️ Weather Info 🌻</h3>
+            <p>Temp (C): <span class="value-text"><span id="val_temp_c">-</span> &deg;C</span></p>
+            <p>Temp (F): <span class="value-text"><span id="val_temp_f">-</span> &deg;F</span></p>
+            <p>Humidity: <span class="value-text"><span id="val_humidity">-</span> %</span></p>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Dijalankan ketika tombol Cari diklik
+            $("#btnCari").click(function() {
+                // Ambil nilai dari input form
+                let kota = $("#inputKota").val();
+                
+                // Validasi jika input kosong
+                if (kota.trim() === "") {
+                    alert("Eh, nama kotanya diisi dulu ya! 🥺");
+                    return;
+                }
+
+                // Susun URL API dengan benar (sudah diperbaiki)
+                const apiKey = "e8a06e02c667464e9ec24926260807";
+                const urlapi = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${kota}&aqi=no`;
+
+                // Panggil API menggunakan AJAX
+                $.ajax({
+                    url: urlapi,
+                    method: "GET",
+                    success: function(data) {
+                        // --- Menampilkan Data Location ---
+                        $("#val_region").text(data.location.region);
+                        $("#val_country").text(data.location.country);
+                        $("#val_lon").text(data.location.lon);
+                        $("#val_lat").text(data.location.lat);
+
+                        // --- Menampilkan Data Cuaca ---
+                        $("#val_temp_c").text(data.current.temp_c);
+                        $("#val_temp_f").text(data.current.temp_f);
+                        $("#val_humidity").text(data.current.humidity);
+
+                        // Munculkan kotaknya dengan efek transisi halus
+                        $(".data-section").fadeIn(500);
+                    },
+                    error: function(error) {
+                        console.error("Terjadi error:", error);
+                        alert("Waduh, kotanya nggak ketemu nih! Coba cek ketikannya lagi ya. 😭");
+                        
+                        // Sembunyikan kotak jika terjadi error
+                        $(".data-section").fadeOut(300);
+                    }
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>
